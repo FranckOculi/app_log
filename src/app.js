@@ -40,6 +40,6 @@ app.register(fastifyStatic, {
 
 // Routes managers
 app.register(logRoutes, { prefix: '/log' })
-app.setNotFoundHandler((req, res) => res.view('src/views/notFound.ejs'))
+app.setNotFoundHandler((_, res) => res.view('src/views/notFound.ejs'))
 
 export default app
