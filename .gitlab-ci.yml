@@ -1,0 +1,54 @@
+image: node:16.14.0
+
+cache:
+  paths:
+    - node_modules/
+
+stages:
+  - build
+  - tests
+  - deploy
+
+build:
+  stage: build
+  script:
+    - app_log build
+    - app_log export
+  artifacts:
+    paths:
+      - build
+
+tests:
+  stage: tests
+  script:
+    - yarn add jest global
+    - jest
+
+coverage:
+  stage: tests
+  script:
+    - yarn add jest global
+    - jest --coverage
+
+.deploy_template:
+  resource_group: deploy
+  stage: deploy
+  before_script:
+    - apt-get update -qq
+    - apt-get install -y -qq sshpass
+    - export SSHPASS=$SSH_PASSWORD
+  dependencies:
+    - build
+  only:
+    - main
+
+deploy-staging:
+  <<: *deploy_template
+  script:
+    - sshpass -e scp -o stricthostkeychecking=no -r build root@1.2.3.4:/path/stg
+
+deploy-production:
+  <<: *deploy_template
+  when: manual
+  script: 
+    - sshpass -e scp -o stricthostkeychecking=no -r build root@1.2.3.4:/path/prod
