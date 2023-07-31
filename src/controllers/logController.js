@@ -13,6 +13,7 @@ export const postLog = async (req, res) => {
 	if (error)
 		return res.code(status).send({
 			message: error,
+			data: null,
 		})
 
 	return res.code(201).send({
