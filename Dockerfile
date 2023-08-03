@@ -1,7 +1,7 @@
 FROM node:18.12.1
-WORKDIR /usr/src/app
-COPY public ./public
-COPY src ./src
+WORKDIR /app
+COPY public /app/public
+COPY src /app/src
 COPY .db.sqlite .
 COPY knexfile.js .
 RUN yarn install
