@@ -6,4 +6,4 @@ COPY .db.sqlite .
 COPY knexfile.js .
 RUN yarn install
 EXPOSE 8080
-CMD ["node", "/usr/src/app/src/server.js"]
+CMD ["yarn", "start"]
