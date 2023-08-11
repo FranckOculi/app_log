@@ -5,6 +5,7 @@
 	"license": "MIT",
 	"type": "module",
 	"scripts": {
+"dev": "cross-env NODE_ENV=development node src/server.js",
 		"start": "node src/server.js",
 		"db:migrate:new": "knex migrate:make",
 		"db:migrate": "knex migrate:latest",
