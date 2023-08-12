@@ -5,8 +5,8 @@
 	"license": "MIT",
 	"type": "module",
 	"scripts": {
-"dev": "cross-env NODE_ENV=development node src/server.js",
-		"start": "node src/server.js",
+		"dev": "cross-env NODE_ENV=development node src/server.js",
+		"start": "cross-env NODE_ENV=production node src/server.js",
 		"db:migrate:new": "knex migrate:make",
 		"db:migrate": "knex migrate:latest",
 		"db:seed": "knex seed:run",
@@ -19,6 +19,7 @@
 		"@fastify/static": "^6.10.2",
 		"@fastify/view": "^8.0.0",
 		"better-sqlite3": "^8.5.0",
+		"cross-env": "^7.0.3",
 		"ejs": "^3.1.9",
 		"fastify": "^4.20.0",
 		"knex": "^2.5.1",
