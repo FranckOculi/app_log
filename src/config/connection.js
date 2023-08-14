@@ -1,8 +1,9 @@
 import knex from 'knex'
 import knexConfiguration from '../../knexfile.js'
-import Database from 'better-sqlite3'
+import dotenv from 'dotenv'
 
-export const database = new Database(
-	knexConfiguration.development.connection.filename
-)
-export const databaseMigration = knex(knexConfiguration.development)
+dotenv.config()
+
+const environment = process.env.NODE_ENV || 'development'
+
+export const database = knex(knexConfiguration[environment])
