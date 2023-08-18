@@ -3,7 +3,7 @@ import { database } from '../config/connection.js'
 class LogRepository {
 	table = 'logs'
 
-	createLog = async function Promise(data) {
+	createLog = async function (data) {
 		try {
 			const stmt_insert = database.prepare(
 				`INSERT INTO ${this.table} (email, domain, type, message, stack, createdAt) VALUES(@email, @domain, @type, @message, @stack, @createdAt)`
@@ -26,7 +26,7 @@ class LogRepository {
 		}
 	}
 
-	getLogs = async function Promise(query, pagination) {
+	getLogs = async function (query, pagination) {
 		try {
 			const per_page = pagination.per_page || 25
 			const page = pagination.current_page || 1
@@ -80,7 +80,7 @@ class LogRepository {
 		}
 	}
 
-	findById = async function Promise(id) {
+	findById = async function (id) {
 		try {
 			const stmt = database.prepare(
 				`SELECT id, email, domain, type, message, stack, createdAt FROM ${this.table} WHERE id = ?`
