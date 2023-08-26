@@ -1,15 +1,17 @@
-FROM node:18.12.1
+# Latest recommended version
+FROM node:18.17.0
 
-WORKDIR /app
+# Create app directory
+WORKDIR /usr/app
 
-COPY public /public
-
-COPY src /src
-
-COPY .db.sqlite .
-
-COPY knexfile.js .
+# Install app dependencies
+# A wildcard is used to ensure both package.json AND package-lock.json are copied
+COPY package*.json ./
 
 RUN yarn
 
-CMD ["yarn", "start"]
+# Bundle app source
+COPY . .
+
+# Run server
+CMD [ "yarn", "start" ]
