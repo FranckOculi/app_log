@@ -1,59 +1,89 @@
-import logRepository from '../repositories/LogRepository.js'
+import logRepository from "../repositories/LogRepository.js";
 
 export const createLogService = async ({ type, message, stack, email }) => {
-	let error
+  if (!type || !message || !stack || !email) {
+    return { error: "Body fields can't be empty", status: 406, data: null };
+  }
 
-	const newLog = {
-		email,
-		domain:
-			email.substring(email.indexOf('@') + 1, email.lastIndexOf('.')) || '',
-		type,
-		message,
-		stack,
-		createdAt: Date.now(),
-	}
+  let error;
 
-	const log = await logRepository.createLog(newLog).catch(err => {
-		error = { error: 'unable to create log', status: 500, data: null }
-	})
+  const newLog = {
+    email,
+    domain:
+      email.substring(email?.indexOf("@") + 1, email?.lastIndexOf(".")) || "",
+    type,
+    message,
+    stack,
+    createdat: new Date(),
+  };
 
-	if (error) return error
+  const log = await logRepository.createLog(newLog).catch(err => {
+    error = { error: "Unable to create log", status: 500, data: null };
+  });
 
-	return { error: null, status: null, data: log }
-}
+  if (error) return error;
+
+  return { error: null, status: null, data: log };
+};
 
 export const getLogService = async (query, pagination) => {
-	let error
+  let error;
 
-	const logs = await logRepository.getLogs(query, pagination).catch(err => {
-		error = {
-			error: 'Erreur dans la recherche des logs',
-			status: 500,
-			data: [],
-		}
-	})
+  const logs = await logRepository.getLogs(query, pagination).catch(err => {
+    error = {
+      error: "Unable to fetch logs",
+      status: 500,
+      data: null,
+    };
+  });
 
-	if (error) return error
+  if (error) return error;
 
-	if (!Array.isArray(logs.data)) return { error: null, status: null, data: [] }
+  if (!Array.isArray(logs.data)) return { error: null, status: null, data: [] };
 
-	const newLogs = logs.data.map(e => {
-		const date = e.createdAt
-		let options = {
-			year: 'numeric',
-			month: 'short',
-			day: 'numeric',
-			hour: 'numeric',
-			minute: 'numeric',
-		}
-		const newDate = new Date(date).toLocaleDateString('fr-FR', options)
-		e.createdAt = newDate
-		return e
-	})
+  const newLogs = logs.data.map(log => {
+    const date = log.createdat;
+    let options = {
+      year: "numeric",
+      month: "short",
+      day: "numeric",
+      hour: "numeric",
+      minute: "numeric",
+    };
+    const newDate = new Date(date).toLocaleDateString("fr-FR", options);
+    log.createdat = newDate;
 
-	return {
-		error: null,
-		status: null,
-		data: { logs: newLogs, pagination: logs.pagination },
-	}
-}
+    return log;
+  });
+
+  const params = {
+    email: query.email,
+    domain: query.domain,
+  };
+
+  return {
+    error: null,
+    status: null,
+    data: { logs: newLogs, pagination: logs.pagination, params },
+  };
+};
+
+export const deleteLogService = async id => {
+  let error;
+
+  const log = await logRepository.findById(id);
+
+  if (!log) return { error: "This log doesn't exist", status: 404, data: id };
+
+  if (log)
+    await logRepository
+      .deleteLogById(id)
+      .catch(
+        err =>
+          (error = { error: "Unable to delete log", status: 500, data: null }),
+      );
+
+  if (error) return error;
+
+  return { error: null, status: null, data: id };
+};
