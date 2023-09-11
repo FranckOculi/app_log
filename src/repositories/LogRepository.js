@@ -1,97 +1,95 @@
-import { database } from '../config/connection.js'
+import { database } from "../config/connection.js";
 
 class LogRepository {
-	table = 'logs'
+  table = "logs";
 
-	createLog = async function (data) {
-		try {
-			const stmt_insert = database.prepare(
-				`INSERT INTO ${this.table} (email, domain, type, message, stack, createdAt) VALUES(@email, @domain, @type, @message, @stack, @createdAt)`
-			)
+  createLog = async function (data) {
+    try {
+      const response_insert = await database(this.table)
+        .insert(data)
+        .returning("id");
 
-			const response_insert = stmt_insert.run({
-				email: data.email,
-				domain: data.domain,
-				type: data.type,
-				message: data.message,
-				stack: data.stack,
-				createdAt: data.createdAt,
-			})
+      const response_data = await this.findById(response_insert[0].id);
 
-			const response_data = this.findById(response_insert.lastInsertRowid)
+      return response_data;
+    } catch (err) {
+      throw new Error(err);
+    }
+  };
 
-			return response_data
-		} catch (err) {
-			throw new Error(err)
-		}
-	}
+  getLogs = async function (query, pagination) {
+    try {
+      const per_page = pagination.per_page || 25;
+      const page = pagination.current_page || 1;
 
-	getLogs = async function (query, pagination) {
-		try {
-			const per_page = pagination.per_page || 25
-			const page = pagination.current_page || 1
+      if (page < 1) page = 1;
+      const offset = (page - 1) * per_page;
 
-			if (page < 1) page = 1
-			const offset = (page - 1) * per_page
+      const data_request = database(this.table).select(
+        "email",
+        "domain",
+        "type",
+        "message",
+        "stack",
+        "createdat",
+      );
 
-			let conditions = []
-			const addCondition = (key, value) => {
-				if (value) {
-					if (conditions.length === 0)
-						conditions.push(`WHERE ${key} LIKE @${key}`)
-					else conditions.push(` AND ${key} LIKE @${key}`)
-				}
-			}
+      const addCondition = (key, value) => {
+        let first_condition = true;
+        if (value) {
+          if (first_condition) {
+            first_condition = false;
+            data_request.whereLike(key, `%${value}%`);
+          } else data_request.andWhereLike(key, `%${value}%`);
+        }
+      };
+      const params = Object.entries(query);
+      params.forEach(([key, value]) => addCondition(key, value));
 
-			const params = Object.entries(query)
-			params.forEach(([key, value]) => addCondition(key, value))
+      data_request.orderBy("createdat", "desc").limit(per_page).offset(offset);
 
-			const data_stmt = database.prepare(
-				`SELECT email, domain, type, message, stack, createdAt FROM ${
-					this.table
-				} ${conditions.join(
-					''
-				)} ORDER BY createdAt DESC LIMIT ${per_page} OFFSET ${offset}`
-			)
+      const count_request = database(this.table).count("*");
 
-			const count_stmt = database.prepare(
-				`SELECT COUNT(*) count FROM ${this.table}`
-			)
+      const data = await data_request;
+      const total = await count_request;
 
-			const total = count_stmt.get()
-			const data = data_stmt.all({
-				email: `%${query.email}%`,
-				domain: `%${query.domain}%`,
-			})
+      const response = {
+        pagination: {
+          total: parseInt(total[0].count),
+          per_page,
+          last_page: Math.ceil(parseInt(total[0].count) / per_page),
+          current_page: page,
+        },
+        data,
+      };
 
-			const response = {
-				pagination: {
-					total: total.count,
-					per_page,
-					last_page: Math.ceil(total.count / per_page),
-					page,
-				},
-				data,
-			}
+      return response;
+    } catch (err) {
+      throw new Error(err);
+    }
+  };
 
-			return response
-		} catch (err) {
-			throw new Error(err)
-		}
-	}
+  findById = async function (id) {
+    try {
+      const response = await database(this.table)
+        .select("id", "email", "domain", "type", "message", "stack")
+        .where({ id });
 
-	findById = async function (id) {
-		try {
-			const stmt = database.prepare(
-				`SELECT id, email, domain, type, message, stack, createdAt FROM ${this.table} WHERE id = ?`
-			)
+      return response;
+    } catch (err) {
+      throw new Error(err);
+    }
+  };
 
-			const response = stmt.get(id)
-			return response
-		} catch (err) {
-			throw new Error(err)
-		}
-	}
+  deleteLogById = async function (id) {
+    try {
+      const response = database(this.table).where(id).del();
+
+      return response;
+    } catch (err) {
+      throw new Error(err);
+    }
+  };
 }
 
-export default new LogRepository()
+export default new LogRepository();
