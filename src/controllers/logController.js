@@ -1,7 +1,7 @@
 import { createLogService, getLogService } from "../services/logServices.js";
 
 export const postLog = async (req, res) => {
-  const { type, message, stack, email } = JSON.parse(req.body);
+  const { type, message, stack, email } = req.body;
 
   const { error, status, data } = await createLogService({
     type,
