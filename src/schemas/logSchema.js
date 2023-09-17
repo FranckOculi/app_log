@@ -1,5 +1,3 @@
-import fastJson from "fast-json-stringify";
-
 const bodyJsonSchema = {
   type: "object",
   required: ["type", "message", "stack", "email"],
@@ -21,9 +19,9 @@ const paramsJsonSchema = {
   },
 };
 
-export const postLogSchema = fastJson({
+export const postLogSchema = {
   body: bodyJsonSchema,
-});
+};
 
 export const getLogSchema = {
   query: paramsJsonSchema,
