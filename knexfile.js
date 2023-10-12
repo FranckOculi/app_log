@@ -2,6 +2,22 @@ import dotenv from "dotenv";
 dotenv.config();
 
 const config = {
+  test: {
+    client: "postgres",
+    connection: {
+      host: "localhost",
+      user: "postgres",
+      password: "toto",
+      database: "postgres",
+    },
+    useNullAsDefault: true,
+    migrations: {
+      directory: "./database/migrations",
+    },
+    seeds: {
+      directory: "./database/seeds",
+    },
+  },
   development: {
     client: process.env.DB_CLIENT,
     connection: {
