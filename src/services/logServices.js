@@ -6,16 +6,18 @@ export const createLogService = async ({ type, message, stack, email }) => {
   }
 
   let error;
-
-  const newLog = {
-    email,
-    domain:
-      email.substring(email?.indexOf("@") + 1, email?.lastIndexOf(".")) || "",
-    type,
-    message,
-    stack,
-    createdat: new Date(),
-  };
+  let newLog;
+  if (typeof email === "string" && email.includes("@")) {
+    newLog = {
+      email,
+      domain:
+        email.substring(email?.indexOf("@") + 1, email?.lastIndexOf(".")) || "",
+      type,
+      message,
+      stack,
+      createdat: new Date(),
+    };
+  } else return { error: "Email adress is invalid", status: 422, data: null };
 
   const log = await logRepository.createLog(newLog).catch(err => {
     error = { error: "Unable to create log", status: 500, data: null };
@@ -29,7 +31,7 @@ export const createLogService = async ({ type, message, stack, email }) => {
 export const getLogService = async (query, pagination) => {
   let error;
 
-  const logs = await logRepository.getLogs(query, pagination).catch(err => {
+  const logs = await logRepository.getLogs(query, pagination).catch(() => {
     error = {
       error: "Unable to fetch logs",
       status: 500,
@@ -38,8 +40,6 @@ export const getLogService = async (query, pagination) => {
   });
 
   if (error) return error;
-
-  if (!Array.isArray(logs.data)) return { error: null, status: null, data: [] };
 
   const newLogs = logs.data.map(log => {
     const date = log.createdat;
@@ -59,6 +59,7 @@ export const getLogService = async (query, pagination) => {
   const params = {
     email: query.email,
     domain: query.domain,
+    origin: query.origin,
   };
 
   return {
@@ -71,17 +72,12 @@ export const getLogService = async (query, pagination) => {
 export const deleteLogService = async id => {
   let error;
 
-  const log = await logRepository.findById(id);
-
-  if (!log) return { error: "This log doesn't exist", status: 404, data: id };
-
-  if (log)
-    await logRepository
-      .deleteLogById(id)
-      .catch(
-        err =>
-          (error = { error: "Unable to delete log", status: 500, data: null }),
-      );
+  await logRepository
+    .deleteLogById(id)
+    .catch(
+      err =>
+        (error = { error: "Unable to delete log", status: 500, data: null }),
+    );
 
   if (error) return error;
 
