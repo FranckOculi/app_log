@@ -8,7 +8,6 @@ describe("LogRepository", () => {
     {
       type: "Type1",
       message: "message1",
-      origin: "frontTest",
       stack: "{stack 1}",
       email: "test@getLogs1.com",
       domain: "getLogs1",
@@ -17,7 +16,6 @@ describe("LogRepository", () => {
     {
       type: "Type2",
       message: "message2",
-      origin: "frontTest",
       stack: "{stack 2}",
       email: "test@getLogs2.com",
       domain: "getLogs2",
@@ -26,7 +24,6 @@ describe("LogRepository", () => {
     {
       type: "Type3",
       message: "message3",
-      origin: "frontTest",
       stack: "{stack 3}",
       email: "test@getLogs3.com",
       domain: "getLogs3",
@@ -35,7 +32,6 @@ describe("LogRepository", () => {
     {
       type: "Type4",
       message: "message4",
-      origin: "backBack",
       stack: "{stack 4}",
       email: "test@getLogs2.com",
       domain: "getLogs2",
@@ -49,7 +45,6 @@ describe("LogRepository", () => {
       email: "test@logRepository.com",
       domain: "logRepository",
       message: "message",
-      origin: "front",
       stack: "stack",
       createdat: new Date(),
     });
@@ -62,7 +57,6 @@ describe("LogRepository", () => {
         domain: errors[i].domain,
         type: errors[i].type,
         message: errors[i].message,
-        origin: errors[i].origin,
         stack: errors[i].stack,
         createdat: errors[i].date,
       });
@@ -100,7 +94,6 @@ describe("LogRepository", () => {
         email: "test@logRepository-createLog.com",
         domain: "logRepository-createLog",
         message: "message",
-        origin: "front",
         stack: "stack",
         createdat: new Date(),
       };
@@ -126,7 +119,6 @@ describe("LogRepository", () => {
         await LogRepository.getLogs(null, {
           per_page: null,
           current_page: null,
-          origin: null,
         });
       } catch (err) {
         expect(err.message).toBe("Unable to get logs");
@@ -138,7 +130,6 @@ describe("LogRepository", () => {
         await LogRepository.getLogs({
           email: null,
           domain: null,
-          origin: null,
         });
       } catch (err) {
         expect(err.message).toBe("Unable to get logs");
@@ -150,7 +141,6 @@ describe("LogRepository", () => {
         {
           email: null,
           domain: null,
-          origin: null,
         },
         {
           per_page: null,
@@ -171,7 +161,6 @@ describe("LogRepository", () => {
         {
           email: errors[0].email,
           domain: null,
-          origin: null,
         },
         {
           per_page: null,
@@ -192,7 +181,6 @@ describe("LogRepository", () => {
         {
           email: null,
           domain: errors[1].domain,
-          origin: null,
         },
         {
           per_page: null,
@@ -208,33 +196,11 @@ describe("LogRepository", () => {
       expect(response.data[0].email).toBe(errors[1].email);
     });
 
-    it("should succeed to return logs with origin in query", async () => {
-      const response = await LogRepository.getLogs(
-        {
-          email: null,
-          domain: null,
-          origin: errors[1].origin,
-        },
-        {
-          per_page: null,
-          current_page: null,
-        },
-      );
-
-      expect(response.pagination.total).toBe(3);
-      expect(response.pagination.per_page).toBe(25);
-      expect(response.pagination.last_page).toBe(1);
-      expect(response.pagination.current_page).toBe(1);
-      expect(response.data.length).toBe(3);
-      expect(response.data[0].origin).toBe(errors[1].origin);
-    });
-
     it("should succeed to return no log", async () => {
       const response = await LogRepository.getLogs(
         {
           email: errors[0].email,
           domain: errors[2].domain,
-          origin: errors[3].origin,
         },
         {
           per_page: null,
@@ -255,7 +221,6 @@ describe("LogRepository", () => {
         {
           email: null,
           domain: null,
-          origin: null,
         },
         {
           per_page: 1,
@@ -276,7 +241,6 @@ describe("LogRepository", () => {
         {
           email: null,
           domain: null,
-          origin: null,
         },
         {
           per_page: null,
