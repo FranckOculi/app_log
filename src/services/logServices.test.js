@@ -26,7 +26,6 @@ describe("logServices", () => {
       const { error, status, data } = await createLogService({
         type: "",
         message: "",
-        origin: "",
         stack: "",
         email: "",
       });
@@ -40,7 +39,6 @@ describe("logServices", () => {
       const fakeLog = {
         type: "Lorem ipsum dolor sit amet consectetur adipisicing elit. Est dolor iste minima ducimus laborum maiores laboriosam accusantium nisi porro corporis beatae ipsa, esse deserunt voluptatem totam perspiciatis nam tempora saepe culpa asperiores ab nemo error. At non nesciunt fugit, animi numquam vel dolore nam. Recusandae quam qui a esse, non corporis ex laudantium est nihil libero nesciunt debitis numquam accusamus expedita quasi unde ipsa labore commodi ipsam autem vero necessitatibus! Quas, quia ullam dicta nulla beatae eum veritatis eligendi et delectus quidem mollitia temporibus id. Iste sequi maiores nulla debitis quo eveniet ipsum modi quasi nihil nostrum repudiandae fugit sit consectetur recusandae, dicta nobis velit ad dolore omnis dolorum qui iusto perferendis neque. Sapiente temporibus, minima culpa aliquam velit dicta tempore suscipit itaque ipsa dolorem? Libero asperiores repellat quaerat quibusdam cumque error ipsum atque, optio quod ipsa suscipit dolorem voluptatibus? Sed impedit necessitatibus minus accusantium aut vero dolor doloremque eligendi excepturi, sapiente quo? Repellendus facilis sed tempore unde, asperiores fuga incidunt temporibus nam sapiente ducimus tenetur necessitatibus veritatis ea? Voluptas minima laudantium atque inventore ducimus accusantium nemo magnam autem voluptatem nobis. Sequi earum officia impedit, voluptatem corrupti vero pariatur illo minima soluta fugit. Alias optio odit quam ab quis, quibusdam amet ullam officia consequuntur perspiciatis suscipit doloribus voluptas magnam molestiae error exercitationem, tempore delectus, neque corporis? Quaerat maxime sed molestias labore eligendi esse nihil ipsa natus corporis quo mollitia laborum magni, repellat reprehenderit eos ipsum dicta, distinctio consequuntur voluptatum fugiat debitis sint hic? Facere rerum ex labore. Corrupti tenetur architecto aut sit, quo similique dolore saepe quod corporis.",
         message: "message",
-        origin: "origin",
         stack: "stack",
         email: "test@createLogService.com",
       };
@@ -55,7 +53,6 @@ describe("logServices", () => {
       const newLog = {
         type: "ReferenceError",
         message: "message",
-        origin: "origin",
         stack: "stack",
         email: "test@createLogService.com",
       };
@@ -88,7 +85,6 @@ describe("logServices", () => {
         domain: "getLogService",
         type: "ReferenceError",
         message: "message",
-        origin: "front",
         stack: "stack",
         createdat: new Date(),
       });
@@ -98,7 +94,6 @@ describe("logServices", () => {
       const query = {
         email: "test@getLogService.com",
         domain: "getLogService",
-        origin: "front",
       };
       const pagination = {
         per_page: 30,
@@ -111,7 +106,6 @@ describe("logServices", () => {
       expect(status).toBeNull();
       expect(data.logs[0].email).toBe("test@getLogService.com");
       expect(data.logs[0].domain).toBe("getLogService");
-      expect(data.logs[0].origin).toBe("front");
       expect(data.pagination.total).toBe(1);
       expect(data.params.email).toBe("test@getLogService.com");
       expect(data.params.domain).toBe("getLogService");
@@ -133,7 +127,6 @@ describe("logServices", () => {
         domain: "domaine",
         type: "ReferenceError",
         message: "message",
-        origin: "origin",
         stack: "stack",
         createdat: new Date(),
       });
