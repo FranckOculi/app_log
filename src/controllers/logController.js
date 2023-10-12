@@ -40,8 +40,10 @@ export const getLog = async (req, res) => {
       data,
     });
 
-  return res.code(200).send({
-    message: "logs",
-    data,
+  return res.view("src/views/index.ejs", {
+    error: data.error,
+    logs: data.logs,
+    pagination: data.pagination,
+    params: data.params,
   });
 };
