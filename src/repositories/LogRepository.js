@@ -13,7 +13,7 @@ class LogRepository {
 
       return response_data;
     } catch (err) {
-      throw new Error(err);
+      throw new Error("Unable to create log");
     }
   };
 
@@ -33,6 +33,7 @@ class LogRepository {
         "stack",
         "createdat",
       );
+      const count_request = database(this.table).count("*");
 
       const addCondition = (key, value) => {
         let first_condition = true;
@@ -40,15 +41,17 @@ class LogRepository {
           if (first_condition) {
             first_condition = false;
             data_request.whereLike(key, `%${value}%`);
-          } else data_request.andWhereLike(key, `%${value}%`);
+            count_request.whereLike(key, `%${value}%`);
+          } else {
+            data_request.andWhereLike(key, `%${value}%`);
+            count_request.whereLike(key, `%${value}%`);
+          }
         }
       };
       const params = Object.entries(query);
       params.forEach(([key, value]) => addCondition(key, value));
 
       data_request.orderBy("createdat", "desc").limit(per_page).offset(offset);
-
-      const count_request = database(this.table).count("*");
 
       const data = await data_request;
       const total = await count_request;
@@ -57,7 +60,10 @@ class LogRepository {
         pagination: {
           total: parseInt(total[0].count),
           per_page,
-          last_page: Math.ceil(parseInt(total[0].count) / per_page),
+          last_page:
+            Math.ceil(parseInt(total[0].count) / per_page) < 1
+              ? 1
+              : Math.ceil(parseInt(total[0].count) / per_page),
           current_page: page,
         },
         data,
@@ -65,29 +71,29 @@ class LogRepository {
 
       return response;
     } catch (err) {
-      throw new Error(err);
+      throw new Error("Unable to get logs");
     }
   };
 
   findById = async function (id) {
     try {
       const response = await database(this.table)
-        .select("id", "email", "domain", "type", "message", "stack")
+        .select("id", "email", "domain", "type", "message", "origin", "stack")
         .where({ id });
 
       return response;
     } catch (err) {
-      throw new Error(err);
+      throw new Error("Unable to find log");
     }
   };
 
   deleteLogById = async function (id) {
     try {
-      const response = database(this.table).where(id).del();
+      const response = await database(this.table).where({ id }).del();
 
       return response;
     } catch (err) {
-      throw new Error(err);
+      throw new Error("Unable to delete log");
     }
   };
 }
