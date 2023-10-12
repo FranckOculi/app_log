@@ -6,7 +6,7 @@
   "main": "src/server.js",
   "type": "module",
   "scripts": {
-    "dev": "cross-env NODE_ENV=development node src/server.js",
+    "dev": "docker-compose up -d && cross-env NODE_ENV=development node src/server.js",
     "start": "cross-env NODE_ENV=production node src/server.js",
     "db:migrate:new": "knex migrate:make",
     "db:migrate": "knex migrate:latest",
