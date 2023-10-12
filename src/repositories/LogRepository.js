@@ -78,7 +78,7 @@ class LogRepository {
   findById = async function (id) {
     try {
       const response = await database(this.table)
-        .select("id", "email", "domain", "type", "message", "origin", "stack")
+        .select("id", "email", "domain", "type", "message", "stack")
         .where({ id });
 
       return response;
