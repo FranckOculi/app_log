@@ -18,8 +18,11 @@
   "dependencies": {
     "@fastify/cookie": "^8.3.0",
     "@fastify/cors": "^8.3.0",
+    "@fastify/static": "^6.11.2",
+    "@fastify/view": "^8.2.0",
     "cross-env": "^7.0.3",
     "dotenv": "^16.3.1",
+    "ejs": "^3.1.9",
     "fastify": "^4.20.0",
     "knex": "^2.5.1",
     "pg": "^8.11.2"
