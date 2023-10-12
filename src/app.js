@@ -3,7 +3,7 @@ import cors from "@fastify/cors";
 import logRoutes from "./routes/logRoutes.js";
 
 const app = fastify({
-  logger: true,
+  logger: process.env.NODE_ENV === "test" ? false : true,
 });
 
 // cors
